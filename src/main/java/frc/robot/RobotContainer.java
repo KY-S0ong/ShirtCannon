@@ -30,7 +30,10 @@ public class RobotContainer {
     driveTrain.setDefaultCommand(
       new DriveCmd(
         driveTrain,
-        xc
+        () -> xc.getLeftY(),
+        () -> xc.getRightX(),
+        () -> xc.getRightY(),
+        () -> xc.getAButtonPressed()
         ));
     configureBindings();
   }

@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -14,20 +16,23 @@ import frc.robot.subsystems.DriveTrain;
 public class DriveCmd extends Command {
   private final DriveTrain driveTrain;
  
-  private Supplier<Double> inLy, inRx, inRy;
-  private Supplier<Boolean> inMode;
+  private DoubleSupplier inLy, inRx, inRy;
+  private BooleanSupplier inMode;
 
   double ly;
   double ry;
   double rx;
   boolean mode;
   private XboxController xc;
-  private SlewRateLimiter slew = new SlewRateLimiter(8.5);
+  private SlewRateLimiter slew = new SlewRateLimiter(0.5);
 
   public DriveCmd(
-    DriveTrain driveTrain, XboxController xc) {
+    DriveTrain driveTrain, DoubleSupplier inLy, DoubleSupplier inRx, DoubleSupplier inRy, BooleanSupplier inMode) {
     this.driveTrain = driveTrain;
-    this.xc = xc;
+    this.inLy = inLy;
+    this.inRx = inRx;
+    this.inRy = inRy;
+    this.inMode = inMode;
 
     addRequirements(driveTrain);
   }
@@ -42,12 +47,12 @@ public class DriveCmd extends Command {
   public void execute() {
    
     
-    ly = (Math.abs(ly) > 0.17) ? ly : 0.0;
-    ry = (Math.abs(ry) > 0.17) ? ry : 0.0;
-    rx = (Math.abs(rx) > 0.17) ? rx : 0.0;
+    ly = (Math.abs(ly) > 0.17) ? slew.calculate(ly) : 0.0;
+    ry = (Math.abs(ry) > 0.17) ? slew.calculate(ry) : 0.0;
+    rx = (Math.abs(rx) > 0.17) ? slew.calculate(rx) : 0.0;
     
-    double l = xc.getRawAxis(2);
-    driveTrain.drive(slew.calculate(xc.getLeftY()), slew.calculate(xc.getRightX()), slew.calculate(xc.getRightY()));
+    
+    driveTrain.drive(ly, rx, ry);
   }
 
   // Called once the command ends or is interrupted.
