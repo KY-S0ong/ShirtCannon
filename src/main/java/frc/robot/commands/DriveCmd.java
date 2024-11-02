@@ -46,6 +46,9 @@ public class DriveCmd extends Command {
   @Override
   public void execute() {
    
+    ly = inLy.getAsDouble();
+    rx = inRx.getAsDouble();
+    ry = inRy.getAsDouble();
     
     ly = (Math.abs(ly) > 0.17) ? slew.calculate(ly) : 0.0;
     ry = (Math.abs(ry) > 0.17) ? slew.calculate(ry) : 0.0;
