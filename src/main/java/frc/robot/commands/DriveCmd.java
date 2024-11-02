@@ -24,7 +24,10 @@ public class DriveCmd extends Command {
   double rx;
   boolean mode;
   private XboxController xc;
-  private SlewRateLimiter slew = new SlewRateLimiter(0.5);
+  private SlewRateLimiter leftYslew = new SlewRateLimiter(5.5);
+  private SlewRateLimiter rightXslew = new SlewRateLimiter(0.5);
+  private SlewRateLimiter rightYslew = new SlewRateLimiter(0.5);
+
 
   public DriveCmd(
     DriveTrain driveTrain, DoubleSupplier inLy, DoubleSupplier inRx, DoubleSupplier inRy, BooleanSupplier inMode) {
@@ -50,9 +53,9 @@ public class DriveCmd extends Command {
     rx = inRx.getAsDouble();
     ry = inRy.getAsDouble();
     
-    ly = (Math.abs(ly) > 0.17) ? slew.calculate(ly) : 0.0;
-    ry = (Math.abs(ry) > 0.17) ? slew.calculate(ry) : 0.0;
-    rx = (Math.abs(rx) > 0.17) ? slew.calculate(rx) : 0.0;
+    ly = (Math.abs(ly) > 0.17) ? leftYslew.calculate(ly)  : 0.0;
+    ry = (Math.abs(ry) > 0.17) ? rightYslew.calculate(ry) : 0.0;
+    rx = (Math.abs(rx) > 0.17) ? rightXslew.calculate(rx) : 0.0;
     
     
     driveTrain.drive(ly, rx, ry);
